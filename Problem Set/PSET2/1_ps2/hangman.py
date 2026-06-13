@@ -55,7 +55,7 @@ def has_player_won(secret_word, letters_guessed):
         False otherwise
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    return all(i in letters_guessed for i in secret_word)
 
 
 def get_word_progress(secret_word, letters_guessed):
@@ -68,8 +68,11 @@ def get_word_progress(secret_word, letters_guessed):
         which letters in secret_word have not been guessed so far
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
+    correct = [i in letters_guessed for i in secret_word]
+    for i in range(len(secret_word)):
+        if not correct[i]:
+            secret_word = secret_word[:i] + '*' + secret_word[i+1:] # replace function could be more attractive
+    return secret_word
 
 def get_available_letters(letters_guessed):
     """
@@ -81,9 +84,7 @@ def get_available_letters(letters_guessed):
       alphabetical order
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
-
+    return "".join([i for i in string.ascii_lowercase if i not in letters_guessed])
 
 def hangman(secret_word, with_help):
     """
@@ -96,7 +97,7 @@ def hangman(secret_word, with_help):
       letters the secret_word contains and how many guesses they start with.
 
     * The user should start with 10 guesses.
-
+    
     * Before each round, you should display to the user how many guesses
       they have left and the letters that the user has not yet guessed.
 
@@ -125,6 +126,62 @@ def hangman(secret_word, with_help):
     Follows the other limitations detailed in the problem write-up.
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
+    guesses = 10
+    score = 0
+    letters_guessed = []
+    vowels = ['a', 'e', 'i', 'o', 'u']
+    print("Welcome to Hangman!")
+    print(f"I am thinking of a word that is {len(secret_word)} letters long.")
+    
+    while True:
+      print('--------------')
+      print(f'You have {guesses} guessess left.')
+      available_letters = get_available_letters(letters_guessed)
+      print('Available letters:', available_letters)
+      guessing = input('Please guess a letter: ')
+      if guessing == '!':
+          if guesses >= 3:
+              remain = [i for i in secret_word if i not in letters_guessed]
+              guessing = remain[random.randint(0, len(remain)-1)]
+              print('Letter revealed:', guessing)
+              letters_guessed.append(guessing)
+              print(get_word_progress(secret_word, letters_guessed))
+              guesses -= 3
+          else:
+              print('Oops! Not enough guesses left:', get_word_progress(secret_word, letters_guessed))
+      else:
+          if guessing not in available_letters:
+              print('Oops! That is not a valid letter. Please input a letter from')
+              print('the alphabet:', get_word_progress(secret_word, letters_guessed))
+              continue
+          letters_guessed.append(guessing)
+
+          if guessing in secret_word: # if correct
+              print("Good guess:", get_word_progress(secret_word, letters_guessed))
+          else: # if not correct
+              print("Oops! That letter is not in my word:", get_word_progress(secret_word, letters_guessed))
+              if guessing in vowels: guesses -= 2
+              else: guesses -= 1
+
+      if guesses <= 0 or has_player_won(secret_word, letters_guessed): # terminal condition
+          score = guesses + 4 * len(set(secret_word)) + 3*len(secret_word)
+          break
+    
+
+    print('--------------')
+    if has_player_won(secret_word, letters_guessed):
+      print('Congratulations, you won!')
+      print('Your total score for this game is:', score)
+    else:
+      print(f'Sorry, you ran out of guesses. The word was {secret_word}.')
+    
+    # vowel 은 틀리면 2점 감점
+    # if input == '!':
+    #   with_help = True
+    # 하나 알려줌.
+    # 3개 차감. 3개 미만이면 warning message.
+    #  # help
+
     pass
 
 
@@ -135,9 +192,9 @@ def hangman(secret_word, with_help):
 if __name__ == "__main__":
     # To test your game, uncomment the following three lines.
 
-    # secret_word = choose_word(wordlist)
-    # with_help = False
-    # hangman(secret_word, with_help)
+    #secret_word = 'tact' #choose_word(wordlist)
+    #with_help = False
+    #hangman(secret_word, with_help)
 
     # After you complete with_help functionality, change with_help to True
     # and try entering "!" as a guess!
