@@ -208,6 +208,7 @@ def get_tfidf(tf_file_path, idf_file_paths):
     print('test_get_tfidf:', TF)
     for k, v in list(TF.items()):
         result.append((k, v*IDF[k]))
+    result.sort(key=lambda x: (x[1], x[0]))
     return result
 
 
