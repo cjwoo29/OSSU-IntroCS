@@ -3,7 +3,7 @@
 # Collaborators:
 
 import random
-
+# We are only interested in characters with ASCII values from 32 to 126
 
 class Message(object):
     def __init__(self, input_text):
@@ -15,7 +15,7 @@ class Message(object):
         a Message object has one attribute:
             the message text
         '''
-        raise NotImplementedError  # delete this line and replace with your code here
+        self.message_text = input_text
 
     def __repr__(self):
         '''
@@ -32,7 +32,7 @@ class Message(object):
 
         Returns: (string) the message text
         '''
-        raise NotImplementedError  # delete this line and replace with your code here
+        return self.message_text
 
     def shift_char(self, char, shift):
         '''
@@ -44,7 +44,7 @@ class Message(object):
 
         Returns: (string) the shifted character with ASCII value in the range [32, 126]
         '''
-        raise NotImplementedError  # delete this line and replace with your code here
+        return chr((((ord(char) + shift) - 32) % 95) +32)
 
     def apply_pad(self, pad):
         '''
@@ -57,7 +57,14 @@ class Message(object):
 
         Returns: (string) The ciphertext produced using the one time pad
         '''
-        raise NotImplementedError  # delete this line and replace with your code here
+        txt = self.get_text()
+        if len(pad) != len(txt): raise ValueError
+        result = []
+        for i in range(len(pad)):
+            result.append(self.shift_char(txt[i], pad[i]))
+        return ''.join(result)
+            
+        
 
 
 class PlaintextMessage(Message):
